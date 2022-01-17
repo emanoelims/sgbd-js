@@ -10,10 +10,12 @@ const database = {
       this.createTable(statment);
       return;
     }
-
     if (statment.startsWith('insert into')) {
       this.insert(statment);
       return;
+    }
+    if (statment.startsWith('select')) {
+      return this.select(statment);
     }
 
     const message = `Syntax error: '${statment}'`;
@@ -47,6 +49,28 @@ const database = {
     })
 
     this.tables[tableName].data.push(row);
+  },
+  select(query) {
+    const regexp = /^select (.+) from ([a-z]+)(?: where (.+))?/;
+    let [, columns, tableName, where] = query.match(regexp);
+    columns = columns.split(/,\s*/);
+    let data;
+    if (where) {
+      const [columnWhere, valueWhere] = where.split(/\s*=\s*/);
+      data = this.tables[tableName].data.filter((row) => {
+        return row[columnWhere] === valueWhere;
+      });
+    }
+
+    data = data || this.tables[tableName].data;
+
+    return data.map((row) => {
+      const newRow = {};
+      columns.forEach(column => {
+        newRow[column] = row[column];
+      });
+      return newRow;
+    });
   }
 };
 
@@ -54,8 +78,10 @@ try {
   database.execute('create table author (id number, name string, age number, city string, state string, country string)');
   database.execute("insert into author (id, name, age) values (1, Douglas Crockford, 62)");
   database.execute("insert into author (id, name, age) values (2, Linus Torvalds, 47)");
-  database.execute("insert into author (id, name, age) values (3, Martin Fowler, 54)");
+  database.execute("insert into author (id, name, age) values (3, Martin Fowler, 62)");
+
+  console.log(database.execute("select name, age from author"));
+  console.log(database.execute("select name, age from author where age = 62"));
 } catch (err) {
   console.log(err.message);
 }
-console.log(JSON.stringify(database, undefined, '  '));
