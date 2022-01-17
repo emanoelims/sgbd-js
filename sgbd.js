@@ -21,16 +21,16 @@ const database = {
   },
   createTable(query) {
     const regexp = /^create table ([a-z]+)\s*\((.+)\)$/;
-    let [, tableName, columnsQuery] = query.match(regexp);
-    columnsQuery = columnsQuery.split(/,\s*/);
+    let [, tableName, columns] = query.match(regexp);
+    columns = columns.split(/,\s*/);
 
     this.tables[tableName] = {
       columns: {},
       data: []
     }
 
-    for (let columnQuery of columnsQuery) {
-      const [name, type] = columnQuery.split(' ');
+    for (let column of columns) {
+      const [name, type] = column.split(' ');
       this.tables[tableName].columns[name] = type;
     }
   },
