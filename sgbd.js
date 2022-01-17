@@ -21,9 +21,8 @@ const database = {
   },
   createTable(query) {
     const regexp = /^create table ([a-z]+)\s*\((.+)\)$/;
-    const parsedQuery = query.match(regexp);
-    const tableName = parsedQuery[1];
-    const columnsQuery = parsedQuery[2].split(/,\s*/);
+    let [, tableName, columnsQuery] = query.match(regexp);
+    columnsQuery = columnsQuery.split(/,\s*/);
 
     this.tables[tableName] = {
       columns: {},
@@ -31,18 +30,15 @@ const database = {
     }
 
     for (let columnQuery of columnsQuery) {
-      const column = columnQuery.split(' ');
-      const name = column[0];
-      const type = column[1];
+      const [name, type] = columnQuery.split(' ');
       this.tables[tableName].columns[name] = type;
     }
   },
   insert(query) {
     const regexp = /^insert into ([a-z]+)\s*\((.+)\) values\s*\((.+)\)$/;
-    const parsedQuery = query.match(regexp);
-    const tableName = parsedQuery[1];
-    const columns = parsedQuery[2].split(/,\s*/);
-    const values = parsedQuery[3].split(/,\s*/);
+    let [, tableName, columns, values] = query.match(regexp);
+    columns = columns.split(/,\s*/);
+    values = values.split(/,\s*/);
 
     const row = {};
 
