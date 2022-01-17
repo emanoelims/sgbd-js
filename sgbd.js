@@ -1,9 +1,18 @@
+const DatabaseError = function (statment, message) {
+  this.statment = statment;
+  this.message = message;
+};
+
 const database = {
   tables: {},
   execute(statment) {
     if (statment.startsWith('create table')) {
       this.createTable(statment);
+      return;
     }
+
+    const message = `Syntax error: '${statment}'`;
+    throw new DatabaseError(statment, message);
   },
   createTable(query) {
     const regexp = /^create table ([a-z]+)\s*\((.+)\)$/;
@@ -26,5 +35,10 @@ const database = {
 };
 
 const query = 'create table author (id number, name string, age number, city string, state string, country string)';
-database.execute(query);
+
+try {
+  database.execute(query);
+} catch (err) {
+  console.log(err.message);
+}
 console.log(JSON.stringify(database, undefined, '  '));
