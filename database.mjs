@@ -1,34 +1,7 @@
-const DatabaseError = class {
-  constructor(statment, message) {
-    this.statment = statment;
-    this.message = message;
-  }
-};
+import Parser from './parser.mjs';
+import DatabaseError from './database-error.mjs';
 
-const Parser = class {
-  constructor() {
-    this.commands = new Map([
-      ['createTable', /^create table ([a-z]+)\s*\((.+)\)$/],
-      ['insert', /^insert into ([a-z]+)\s*\((.+)\) values\s*\((.+)\)$/],
-      ['select', /^select (.+) from ([a-z]+)(?: where (.+))?/],
-      ['delete', /^delete from ([a-z]+)(?: where (.+))?$/]
-    ]);
-  }
-
-  parse(statment) {
-    for (let [command, regexp] of this.commands) {
-      if (regexp.test(statment)) {
-        return {
-          command,
-          parsedStatment: statment.match(regexp)
-        }
-      }
-    }
-    return false;
-  }
-}
-
-const Database = class {
+export default class Database {
   constructor() {
     this.tables = {};
     this.parser = new Parser();
@@ -100,19 +73,3 @@ const Database = class {
     this.tables[tableName].data = [];
   }
 };
-
-const database = new Database();
-
-try {
-  database.execute('create table author (id number, name string, age number, city string, state string, country string)');
-  database.execute("insert into author (id, name, age) values (1, Douglas Crockford, 62)");
-  database.execute("insert into author (id, name, age) values (2, Linus Torvalds, 47)");
-  database.execute("insert into author (id, name, age) values (3, Martin Fowler, 62)");
-  console.log(database.execute("select name, age from author"));
-  database.execute("delete from author where id = 2");
-  console.log(database.execute("select name, age from author"));
-  database.execute("delete from author");
-  console.log(database.execute("select name, age from author"));
-} catch (err) {
-  console.log(err.message);
-}
