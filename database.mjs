@@ -8,13 +8,18 @@ export default class Database {
   }
 
   execute(statment) {
-    const parsed = this.parser.parse(statment);
-    if (!parsed) {
-      const message = `Syntax error: '${statment}'`;
-      throw new DatabaseError(statment, message);
-    }
-    const {command, parsedStatment} = parsed;
-    return this[command](parsedStatment);
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const parsed = this.parser.parse(statment);
+        if (!parsed) {
+          const message = `Syntax error: '${statment}'`;
+          reject(new DatabaseError(statment, message));
+          return;
+        }
+        const {command, parsedStatment} = parsed;
+        resolve(this[command](parsedStatment));
+      }, 1000);
+    });
   }
 
   createTable(parsedStatment) {
