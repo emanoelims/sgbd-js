@@ -1,1 +1,3 @@
-# Repositório para o curso JavaScript MasterClass do Rodrigo Branas
+# SGBD em JavaScript
+
+Esse projeto foi criado a partir dos desafios do Curso JavaScript MasterClass
