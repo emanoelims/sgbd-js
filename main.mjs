@@ -9,7 +9,7 @@ database.execute('create table author (id number, name string, age number, city 
     database.execute("insert into author (id, name, age) values (3, Martin Fowler, 62)")
   ])
   .then(() => {
-    return database.execute("selet name, age from author").then((rows) => {
+    return database.execute("select name, age from author").then((rows) => {
       console.log(rows);
     });
   });
